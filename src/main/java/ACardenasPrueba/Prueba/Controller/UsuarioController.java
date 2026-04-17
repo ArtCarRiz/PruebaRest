@@ -17,6 +17,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,35 +39,35 @@ public class UsuarioController {
     public ResponseEntity getUsuarios(@RequestParam(required = false) String sortedBy) {
         Result result = new Result<>();
         try {
-           List<Usuario> userList = usuarioService.getAllUsuarios(sortedBy);
+            List<Usuario> userList = usuarioService.getAllUsuarios(sortedBy);
 
             return ResponseEntity.ok(userList);
         } catch (Exception e) {
         }
         return ResponseEntity.status(500).body("Algo salio mal...");
     }
-    
-    @GetMapping ("/filtro")
-    public ResponseEntity filtrarUsuarios(@RequestParam String filter){
+
+    @GetMapping("/filtro")
+    public ResponseEntity filtrarUsuarios(@RequestParam String filter) {
         Result result = new Result();
         try {
             List<Usuario> userlist = usuarioService.filtro(filter);
-            
+
             return ResponseEntity.ok(userlist);
         } catch (Exception e) {
-            
+
         }
         return ResponseEntity.status(500).body("Algo malio sal...");
     }
-    
+
     @PostMapping
-    public ResponseEntity addUsuario(@RequestBody Usuario usuario){
+    public ResponseEntity addUsuario(@RequestBody Usuario usuario) {
         Result result = new Result();
         try {
             result = usuarioService.add(usuario);
             if (result.correct) {
                 return ResponseEntity.ok(result);
-            }else{
+            } else {
                 return ResponseEntity.status(400).body(result);
             }
         } catch (Exception e) {
@@ -75,6 +76,27 @@ public class UsuarioController {
             result.ex = e;
         }
         return ResponseEntity.status(500).body("algo malio sal");
+    }
+
+    @PatchMapping
+    public ResponseEntity updateUsuario(@RequestBody Usuario usuario, @RequestParam int identificador) {
+        Result result = new Result();
+        try {
+
+            result = usuarioService.update(identificador, usuario);
+
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.status(400).body(result);
+            }
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+        return ResponseEntity.status(500).body(result);
     }
 
 }

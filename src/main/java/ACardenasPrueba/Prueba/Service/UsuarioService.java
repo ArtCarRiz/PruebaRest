@@ -4,6 +4,7 @@
  */
 package ACardenasPrueba.Prueba.Service;
 
+import ACardenasPrueba.Prueba.Component.ObjetosCreados;
 import ACardenasPrueba.Prueba.ML.Direcciones;
 import ACardenasPrueba.Prueba.ML.Result;
 import ACardenasPrueba.Prueba.ML.Usuario;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,15 +31,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsuarioService {
 
-//    ApplicationContext context = SpringApplication.run(PruebaApplication.class, args);
-//    
-//    @Autowired
-//     ObjetosCargados objetosCargados = context.getBean(ObjetosCargados.class);
-    private final List<Usuario> lista = new ArrayList<>();
+    @Autowired
+    ObjetosCreados objetosCreados;
+
+    private List<Usuario> lista;
 
     public List<Usuario> getAllUsuarios(String sortedBy) {
 
-        agregarUsuarios();
+        lista = obtenerLista();
+
         if (sortedBy == null || sortedBy.isEmpty()) {
             return lista;
         }
@@ -64,8 +66,6 @@ public class UsuarioService {
 
     public List<Usuario> filtro(String filter) {
 
-        String letraPrueba = "H";
-        agregarUsuarios();
         String[] partes = filter.split(" ");
         String atributo = partes[0];
         String orden = partes[1];
@@ -90,15 +90,58 @@ public class UsuarioService {
         return listaFiltrada;
 
     }
-    
-    public Result add(Usuario usuario){
+
+    public Result add(Usuario usuario) {
         Result result = new Result();
         try {
             
             Usuario nuevoUsuario = new Usuario(usuario.getId(), usuario.getEmail(), usuario.getName(), usuario.getEmail(), usuario.getEmail(), usuario.getEmail(), usuario.getCreated_ad());
-            
+            lista = obtenerLista();
             lista.add(nuevoUsuario);
             result.correct = true;
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+    
+    public Result getById(int identificador){
+        Result result = new Result();
+        
+        lista = obtenerLista();
+        
+        result.object = lista.stream()
+                .filter(u ->u.getId() == identificador)
+                .collect(Collectors.toList());
+        
+        return result;
+    }
+    
+    public Result update(int identificador, Usuario usuario){
+        Result result = new Result();
+        lista = obtenerLista();
+        try {
+            result = getById(identificador);
+            Usuario usuarioActual = (Usuario) result.object;
+            
+            if (usuario.getName() != null) {
+                usuarioActual.setName(usuario.getName());
+            }
+            if (usuario.getEmail() != null) {
+                usuarioActual.setEmail(usuario.getEmail());
+            }
+            if (usuario.getPassword() != null) {
+                usuarioActual.setPassword(usuario.getPassword());
+            }
+            if (usuario.getPhone() != null) {
+                usuarioActual.setPhone(usuario.getPhone());
+            }
+            
+            result.object = usuarioActual;
             
             
         } catch (Exception e) {
@@ -107,33 +150,16 @@ public class UsuarioService {
             result.ex = e;
         }
         
-        
         return result;
-        
     }
+    
 
-    private void agregarUsuarios() {
-
-        Random rand = new Random();
-
-        ZoneId horaMadagascar = ZoneId.of("Indian/Antananarivo");
-        ZonedDateTime madagascarTime = ZonedDateTime.now(horaMadagascar);
-
-        Date horaDeCreacion = Date.from(madagascarTime.toInstant());
-        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        Usuario usuario1 = new Usuario(rand.nextInt(10) + 1, "user1@email.com", "Alfredo", "7441580909", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
-
-        Usuario usuario2 = new Usuario(rand.nextInt(10) + 1, "user2@email.com", "Fernando", "7441586799", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
-
-        Usuario usuario3 = new Usuario(rand.nextInt(10) + 1, "user3@email.com", "Carlos", "7440120909", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
-
-        lista.add(usuario1);
-        lista.add(usuario2);
-        lista.add(usuario3);
+    private List<Usuario> obtenerLista() {
+        return objetosCreados.getLista();
     }
 
     private List<Usuario> ordenConValor(String orden, String valor) {
+        lista = obtenerLista();
 
         if (orden.equals("sw")) {
             return lista.stream()
