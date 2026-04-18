@@ -95,7 +95,7 @@ public class UsuarioService {
         Result result = new Result();
         try {
             
-            Usuario nuevoUsuario = new Usuario(usuario.getId(), usuario.getEmail(), usuario.getName(), usuario.getEmail(), usuario.getEmail(), usuario.getEmail(), usuario.getCreated_ad());
+            Usuario nuevoUsuario = new Usuario(usuario.getId(), usuario.getEmail(), usuario.getName(), usuario.getPhone(), usuario.getPassword(), usuario.getTax_id(), usuario.getCreated_ad());
             lista = obtenerLista();
             lista.add(nuevoUsuario);
             result.correct = true;
@@ -112,7 +112,6 @@ public class UsuarioService {
     public Result getById(int identificador){
         Result result = new Result();
         
-        lista = obtenerLista();
         
         result.object = lista.stream()
                 .filter(u ->u.getId() == identificador)
@@ -126,22 +125,23 @@ public class UsuarioService {
         lista = obtenerLista();
         try {
             result = getById(identificador);
-            Usuario usuarioActual = (Usuario) result.object;
+            List<Usuario> usuarioActual = (List<Usuario>) result.object;
             
             if (usuario.getName() != null) {
-                usuarioActual.setName(usuario.getName());
+                usuarioActual.get(0).setName(usuario.getName());
             }
             if (usuario.getEmail() != null) {
-                usuarioActual.setEmail(usuario.getEmail());
+                usuarioActual.get(0).setEmail(usuario.getEmail());
             }
             if (usuario.getPassword() != null) {
-                usuarioActual.setPassword(usuario.getPassword());
+                usuarioActual.get(0).setPassword(usuario.getPassword());
             }
             if (usuario.getPhone() != null) {
-                usuarioActual.setPhone(usuario.getPhone());
+                usuarioActual.get(0).setPhone(usuario.getPhone());
             }
             
             result.object = usuarioActual;
+            result.correct = true;
             
             
         } catch (Exception e) {
@@ -153,6 +153,31 @@ public class UsuarioService {
         return result;
     }
     
+    public Result delete(int identificador){
+        Result result = new Result();
+        try {
+            
+            lista = obtenerLista();
+            lista.remove(identificador);
+            Result resultGetbyId = new Result();
+            resultGetbyId = getById(identificador);
+            
+            if (resultGetbyId.correct ==  false) {
+                result.correct = true;
+                result.object = lista;
+            }else{
+                result.correct = false;
+                //poner validacion para indicar que no existe ese id?
+            }
+            
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+                    
+        }
+        return result;
+    }
 
     private List<Usuario> obtenerLista() {
         return objetosCreados.getLista();

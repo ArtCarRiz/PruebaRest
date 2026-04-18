@@ -35,11 +35,11 @@ public class ObjetosCreados {
         Date horaDeCreacion = Date.from(madagascarTime.toInstant());
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        Usuario usuario1 = new Usuario(rand.nextInt(10) + 1, "user1@email.com", "Alfredo", "7441580909", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
+        Usuario usuario1 = new Usuario(1, "user1@email.com", "Alfredo", "7441580909", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
 
-        Usuario usuario2 = new Usuario(rand.nextInt(10) + 1, "user2@email.com", "Fernando", "7441586799", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
+        Usuario usuario2 = new Usuario(2, "user2@email.com", "Fernando", "7441586799", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
 
-        Usuario usuario3 = new Usuario(rand.nextInt(10) + 1, "user3@email.com", "Carlos", "7440120909", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
+        Usuario usuario3 = new Usuario(3, "user3@email.com", "Carlos", "7440120909", "asd123", "CARA030303HGRRZRA3", horaDeCreacion);
 
         lista.add(usuario1);
 

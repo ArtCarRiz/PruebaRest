@@ -24,6 +24,8 @@ public class ConfigSecurity {
                 .authorizeHttpRequests((requests) -> requests
                 .requestMatchers(HttpMethod.POST, "/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                .requestMatchers(HttpMethod.PATCH, "/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
                 .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
